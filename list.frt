@@ -33,10 +33,15 @@
 : list-add-tail ( size lst -- addr )
     dup list-size rot swap rot list-add ;
 
+( Index of the list element being executed on. )
+0 value list-exec-index
+
 ( Run an execution token of prototype [ addr -- ] on a range )
 ( of index from the list. )
 : list-exec-on-range ( xt end-index start-index lst -- )
-    rot rot ?do 2dup i swap list-get swap execute loop 2drop ;
+    rot rot ?do
+        i to list-exec-index
+        2dup i swap list-get swap execute loop 2drop ;
 
 ( Run an execution token of prototype [ addr -- ] on the list )
 : list-exec ( xt lst -- )

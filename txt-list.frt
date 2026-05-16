@@ -1,0 +1,45 @@
+\ #IR list.frt
+( ----------------- Linked list of strings ------------------ )
+
+( The linked list contains owned copies of the strings. The )
+( size of the string is stored on a cell, followed by the   )
+( content of the string.                                    )
+
+( Copies the string at addr, with the size on a cell and the )
+( content following. )
+: str-copy-owned ( c-addr u addr -- ) 2dup ! cell+ swap move ;
+
+( Returns the string stored at the given address as a forth )
+( string. )
+: str-get ( addr -- c-addr u ) dup @ swap cell+ swap ;
+
+( Add the string at the given index of the string. )
+: slist-add ( c-addr u index lst -- ) >r >r dup cell+ r> r>
+    list-add str-copy-owned ;
+
+( Get the string stored at the given index. )
+: slist-get ( index lst -- c-addr u ) list-get str-get ;
+
+( Truncate all strings in the list to the given size. )
+1 value slist-len
+: trucating ( addr -- ) dup @ slist-len > if
+    <# 10 hold s"  is too long. Truncating it." holds
+       list-exec-index 1 + s>d #s s" Line " holds #> type
+    slist-len swap ! else drop then ;
+: slist-truncate ( len lst -- ) swap to slist-len
+    ['] trucating swap list-exec ;
+    
+
+( -------------------------- Test --------------------------- )
+
+list-init constant lst
+s" abcd" 0 lst slist-add
+s" EFGH" 0 lst slist-add
+s" 0" 0 lst slist-add
+s" YOLO" 0 lst slist-add
+: str-print str-get type cr ;
+' str-print lst list-exec
+2 lst slist-truncate
+' str-print lst list-exec
+lst list-free
+bye
