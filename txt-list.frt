@@ -42,7 +42,7 @@ bl value slist-pad
     2 pick to slist-pad ['] padding swap list-exec 2drop ;
 
 ( Prints the content of a string list. )
-: str-print str-get type cr ;
+: str-print ( addr -- ) str-get type cr ;
 : slist-print ( lst -- ) ['] str-print swap list-exec ;
 
 \ #SI
