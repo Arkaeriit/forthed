@@ -41,6 +41,11 @@ bl value slist-pad
     2dup swap cell+ swap list-resize-all-nodes
     2 pick to slist-pad ['] padding swap list-exec 2drop ;
 
+( Prints the content of a string list. )
+: str-print str-get type cr ;
+: slist-print ( lst -- ) ['] str-print swap list-exec ;
+
+\ #SI
 ( -------------------------- Test --------------------------- )
 
 list-init constant lst
@@ -48,12 +53,11 @@ s" abcd" 0 lst slist-add
 s" EFGH" 0 lst slist-add
 s" 0" 0 lst slist-add
 s" YOLO" 0 lst slist-add
-: str-print str-get type cr ;
-' str-print lst list-exec
+lst slist-print
 2 lst slist-truncate
-' str-print lst list-exec
+lst slist-print
 s" This is a long line" 3 lst slist-add
 'x' 5 lst slist-pad
-' str-print lst list-exec
+lst slist-print
 lst list-free
 bye
