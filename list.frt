@@ -47,10 +47,23 @@
 : list-exec ( xt lst -- )
     dup list-size 0 rot list-exec-on-range ;
 
+( Reallocate the node at the given index to have a new size. )
+( The size only refer to the content size and does not )
+( include the pointer to the next node. )
+: list-resize-node ( size index lst -- ) 2dup (list-get)
+    3 pick cell+ resize abort" Can't resize node."
+    ( size index lst data )
+    >r swap 1- swap (list-get) r> swap ! drop ;
+
+( Reallocate all the node so that their data has the given )
+( size. )
+: list-resize-all-nodes ( size lst -- ) dup list-size 0 ?do
+    2dup i swap list-resize-node loop 2drop ;
+
 ( Deallocate a list. )
 : list-free ( lst -- ) dup list-size dup 0 ?do
     2dup i - 1- swap (list-get) free abort" Can't free." loop
-    drop free abort" Cant' free." ;
+    drop free abort" Can't free." ;
 
 \ #SI
 ( -------------------------- Test --------------------------- )

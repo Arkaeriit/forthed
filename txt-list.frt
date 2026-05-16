@@ -13,7 +13,7 @@
 ( string. )
 : str-get ( addr -- c-addr u ) dup @ swap cell+ swap ;
 
-( Add the string at the given index of the string. )
+( Add the string at the given index to the list. )
 : slist-add ( c-addr u index lst -- ) >r >r dup cell+ r> r>
     list-add str-copy-owned ;
 
@@ -22,13 +22,24 @@
 
 ( Truncate all strings in the list to the given size. )
 1 value slist-len
-: trucating ( addr -- ) dup @ slist-len > if
+: truncating ( addr -- ) dup @ slist-len > if
     <# 10 hold s"  is too long. Truncating it." holds
        list-exec-index 1 + s>d #s s" Line " holds #> type
     slist-len swap ! else drop then ;
 : slist-truncate ( len lst -- ) swap to slist-len
-    ['] trucating swap list-exec ;
+    ['] truncating swap list-exec ;
     
+( Pad all strings to the given size with the given char. )
+( Truncate strings that are longer than the given size. )
+bl value slist-pad
+: padding ( addr -- ) dup @ slist-len < if
+    dup str-get slist-len swap
+    ?do dup i + slist-pad swap c! loop drop
+    slist-len swap !
+    else drop then ;
+: slist-pad ( c len lst -- ) 2dup slist-truncate
+    2dup swap cell+ swap list-resize-all-nodes
+    2 pick to slist-pad ['] padding swap list-exec 2drop ;
 
 ( -------------------------- Test --------------------------- )
 
@@ -40,6 +51,9 @@ s" YOLO" 0 lst slist-add
 : str-print str-get type cr ;
 ' str-print lst list-exec
 2 lst slist-truncate
+' str-print lst list-exec
+s" This is a long line" 3 lst slist-add
+'x' 5 lst slist-pad
 ' str-print lst list-exec
 lst list-free
 bye
