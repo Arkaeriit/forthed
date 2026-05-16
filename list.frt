@@ -1,7 +1,5 @@
-( Like allocate but abort in case of error. )
-( TODO: put in an util file, maybe. )
-: xallocate ( u -- addr ) allocate
-    abort" Can't allocate memory." ;
+\ #IR utils.frt
+( ------------ Basic linked list implementation ------------- )
 
 ( The list head 'lst' in prototypes is a pointer to the first )
 (  element of the list. The list is NULL terminated. )
@@ -49,8 +47,8 @@
     2dup i - 1- swap (list-get) free abort" Can't free." loop
     drop free abort" Cant' free." ;
 
+\ #SI
 ( -------------------------- Test --------------------------- )
-
 
 list-init constant lst
 cell lst list-add-head 1 swap !
