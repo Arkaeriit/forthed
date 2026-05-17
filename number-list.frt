@@ -8,3 +8,6 @@
 : n-print ( addr -- ) @ . ;
 : nlist-print ( lst -- ) ['] n-print swap list-exec ;
 
+( Get the first number of the list. )
+: nlist-get-first ( lst -- n ) 0 swap list-get @ ;
+
