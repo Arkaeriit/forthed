@@ -29,21 +29,28 @@
     postpone ed-error postpone exit postpone then ; immediate
 
 \ #IR range-parser.frt
-\ #SI
 
 ( ---------------------- Command range ---------------------- )
 
-( Check that the given range is valid for an input command. )
-( This means that it contains a single number number between )
-( 0 and the size of the text. )
-( TODO: change API so that a default range can be created. )
-: ed-check-range-input ( range -- f ) dup list-size 1 = if
-        nlist-get-first dup 0< if false else
-            ed-lst list-size <= if true else false then then
-    else false then ;
+( If the given range is empty, add the current line in it. )
+: ed-range-default-cl ( range -- range ) dup list-size 0= if
+    dup ed-current-line swap nlist-append then ;
+
+( Return true if all the values in the range are between 0 )
+( and the text list size. )
+: ed-range-0-to-size ( range -- f ) 0 ed-lst list-size
+    nlist-in-range ;
+
+( Return true if the range is of size 1. )
+: ed-range-size-1 ( range -- f ) list-size 1 = ;
 
 ( Check that the range is empty. )
 : ed-check-range-empty ( range -- f ) list-size 0= ;
+
+( Prepare a range for an input command. Return true if the )
+( range is valid. )
+: ed-range-input ( range -- range f ) ed-range-default-cl
+    dup dup ed-range-0-to-size swap ed-range-size-1 and ;
 
 ( ----------------------- Input mode ------------------------ )
 
@@ -56,7 +63,7 @@
 ( ----------------------- Normal mode ----------------------- )
 
 ( Execute the a command. )
-: ed-command-a ( range -- ) dup ed-check-range-input
+: ed-command-a ( range -- ) ed-range-input
     ed-error-command
     ed-mode-input to ed-mode
     dup nlist-get-first to ed-current-line 

@@ -90,6 +90,7 @@ variable last-element
     range-error if list-init rot rot
                 else 2drop gen-range ed-cmd ed-cmd-len then ;
 
+\ #SI
 ( -------------------------- Test --------------------------- )
 
 s" abcd" ed-read-range type space nlist-print cr
