@@ -41,6 +41,11 @@
 : ed-range-0-to-size ( range -- f ) 0 ed-lst list-size
     nlist-in-range ;
 
+( Return true if all the values in the range are between 1 )
+( and the text list size. )
+: ed-range-1-to-size ( range -- f ) 1 ed-lst list-size
+    nlist-in-range ;
+
 ( Return true if the range is of size 1. )
 : ed-range-size-1 ( range -- f ) list-size 1 = ;
 
@@ -52,6 +57,11 @@
 : ed-range-input ( range -- range f ) ed-range-default-cl
     dup dup ed-range-0-to-size swap ed-range-size-1 and ;
 
+( Prepare a range for an action on lines. Return true if the )
+( range is valid. )
+: ed-range-action ( range -- range f ) ed-range-default-cl
+    dup ed-range-1-to-size ;
+
 ( ----------------------- Input mode ------------------------ )
 
 ( Process a line input in the input mode. )
@@ -61,6 +71,16 @@
     ed-current-line 1+ to ed-current-line then ;
 
 ( ----------------------- Normal mode ----------------------- )
+
+( Execute an action on all lines in the given range, and set )
+( the current line for each ones. The xt must have prototype )
+( [c-addr n -- ]. Convert between the 0-indexing of the list )
+( and the 1-indexing of the lines. )
+0 value exec-on-range-xt
+: exec-on-node ( addr -- ) @ dup to ed-current-line
+    1- ed-lst slist-get exec-on-range-xt execute ;
+: ed-exec-on-range ( range 'xt -- ) to exec-on-range-xt
+    ['] exec-on-node swap list-exec ;
 
 ( Execute the a command. )
 : ed-command-a ( range -- ) ed-range-input
@@ -74,9 +94,10 @@
     ( ed-check-range-empty ed-error-command ) list-free
     1 to ed-quit ;
 
-( Execute the p command. ) ( TODO: range )
-: ed-command-p ( range -- ) list-free 
-    ed-lst slist-print ; 
+( Execute the p command. )
+: action-p ( c-addr u -- ) type cr ;
+: ed-command-p ( range -- ) ed-range-action ed-error-command
+    dup ['] action-p ed-exec-on-range list-free ;
 
 ( Process a line input in the command mode.)
 : ed-process-command ( c-addr u -- ) ed-read-range

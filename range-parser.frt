@@ -60,9 +60,10 @@ variable last-element
 
 ( Try to parse a shorthand, do a full parse otherwise. )
 : parse-range ( -- ) ed-cmd c@ case
-    ',' of ed-current-line first-element ! ed-lst list-size
+    ',' of 1 first-element ! ed-lst list-size
             last-element ! eat-char endof
-    ';' of 1 first-element ! ed-lst list-size last-element !
+    ';' of ed-current-line first-element !
+            ed-lst list-size last-element !
             eat-char first-element @ to ed-current-line endof
     ( TODO: global regexes )
     parse-first-element try-parse-last-element
