@@ -28,14 +28,10 @@
 : ed-error-command ( f -- ) postpone 0= postpone if
     postpone ed-error postpone exit postpone then ; immediate
 
-( ---------------------- Command range ---------------------- )
+\ #IR range-parser.frt
+\ #SI
 
-( Reads the range part of a command. Return the range as a )
-( number list and the rest of the prompt line. )
-: ed-read-range ( c-addr1 u1 -- lst c-addr2 u2 )
-    ( TODO: for now, only read single numbers )
-    >r >r 0 s>d r> r> >number >r >r d>s
-    list-init 2dup nlist-append nip r> r> ;
+( ---------------------- Command range ---------------------- )
 
 ( Check that the given range is valid for an input command. )
 ( This means that it contains a single number number between )
@@ -80,6 +76,7 @@
     2dup s" a" compare 0= if 2drop ed-command-a exit then
     2dup s" Q" compare 0= if 2drop ed-command-Q exit then
     2dup s" p" compare 0= if 2drop ed-command-p exit then
+    2dup s" "  compare 0= if 2drop list-free    exit then
     2drop list-free ed-error ;
 
 ( Process a line input. )
