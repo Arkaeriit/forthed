@@ -62,8 +62,8 @@
 
 ( Deallocate a list. )
 : list-free ( lst -- ) dup list-size dup 0 ?do
-    2dup i - 1- swap (list-get) free abort" Can't free." loop
-    drop free abort" Can't free." ;
+    2dup i - 1- swap (list-get) xfree loop
+    drop xfree ;
 
 \ #SI
 ( -------------------------- Test --------------------------- )
