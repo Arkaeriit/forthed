@@ -73,6 +73,11 @@
         to edited-node -1 +loop
     0 edited-node ! tail head ! head ;
 
+( Delete the element of the list at the given index. )
+: list-delete ( index lst -- ) 2dup (list-get) >r
+    swap 1- swap (list-get)
+    r> dup @ swap xfree swap ! ;
+
 ( Deallocate a list. )
 : list-free ( lst -- ) dup list-size dup 0 ?do
     2dup i - 1- swap (list-get) xfree loop
@@ -87,10 +92,17 @@ cell lst list-add-head 2 swap !
 cell lst list-add-head 3 swap !
 cell lst list-add-head 4 swap !
 
-:noname @ . cr ; lst list-exec
+:noname @ . cr ; lst list-exec cr
 lst list-reverse drop
-:noname @ . cr ; lst list-exec
+:noname @ . cr ; lst list-exec cr
+2 lst list-delete
+:noname @ . cr ; lst list-exec cr
+0 lst list-delete
+:noname @ . cr ; lst list-exec cr
+1 lst list-delete
+:noname @ . cr ; lst list-exec cr
 lst list-free
+
 list-init list-reverse ." okay" cr list-free
 list-init dup 0 swap list-add-head drop list-reverse list-free
 bye
