@@ -52,6 +52,18 @@
 ( Check that the range is empty. )
 : ed-check-range-empty ( range -- f ) list-size 0= ;
 
+( Check that the values in the range are ordered. It should )
+( be the case because of how the range parser works, but )
+( it can't hurt to check. )
+0 value last-line
+0 value ordered
+: check-order-node ( addr -- ) @ dup last-line
+    > ordered and to ordered
+    to last-line ;
+: ed-check-range-ordered ( range -- f )
+    -1 to last-line true to ordered
+    ['] check-order-node swap list-exec ordered ;
+
 ( Prepare a range for an input command. Return true if the )
 ( range is valid. )
 : ed-range-input ( range -- range f ) ed-range-default-cl
@@ -60,7 +72,8 @@
 ( Prepare a range for an action on lines. Return true if the )
 ( range is valid. )
 : ed-range-action ( range -- range f ) ed-range-default-cl
-    dup ed-range-1-to-size ;
+    dup dup ed-range-1-to-size
+    swap ed-check-range-ordered and ;
 
 ( ----------------------- Input mode ------------------------ )
 
@@ -94,6 +107,11 @@
     ( ed-check-range-empty ed-error-command ) list-free
     1 to ed-quit ;
 
+( Execute the d command. )
+: action-d ( addr -- ) @ 1- ed-lst list-delete ;
+: ed-command-d ( range -- ) ed-range-action ed-error-command
+    list-reverse dup ['] action-d swap list-exec list-free ;
+
 ( Execute the p command. )
 : action-p ( c-addr u -- ) type cr ;
 : ed-command-p ( range -- ) ed-range-action ed-error-command
@@ -104,6 +122,7 @@
     2dup s" a" compare 0= if 2drop ed-command-a exit then
     2dup s" Q" compare 0= if 2drop ed-command-Q exit then
     2dup s" p" compare 0= if 2drop ed-command-p exit then
+    2dup s" d" compare 0= if 2drop ed-command-d exit then
     2dup s" "  compare 0= if 2drop list-free    exit then
     2drop list-free ed-error ;
 
