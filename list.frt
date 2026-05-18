@@ -60,6 +60,19 @@
 : list-resize-all-nodes ( size lst -- ) dup list-size 0 ?do
     2dup i swap list-resize-node loop 2drop ;
 
+( Reverse a list. Return the same list that was given. Data )
+( is changed in place. )
+0 value edited-node
+0 value head
+0 value tail
+: list-reverse ( lst1 -- lst1 ) dup list-size 0= if exit then
+    dup dup to head dup list-size
+    1- swap (list-get) dup to tail to edited-node
+    head list-size 1- 0 swap ?do
+        i head (list-get) dup edited-node !
+        to edited-node -1 +loop
+    0 edited-node ! tail head ! head ;
+
 ( Deallocate a list. )
 : list-free ( lst -- ) dup list-size dup 0 ?do
     2dup i - 1- swap (list-get) xfree loop
@@ -75,6 +88,10 @@ cell lst list-add-head 3 swap !
 cell lst list-add-head 4 swap !
 
 :noname @ . cr ; lst list-exec
+lst list-reverse drop
+:noname @ . cr ; lst list-exec
 lst list-free
+list-init list-reverse ." okay" cr list-free
+list-init dup 0 swap list-add-head drop list-reverse list-free
 bye
 
