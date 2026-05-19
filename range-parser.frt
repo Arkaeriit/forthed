@@ -24,9 +24,10 @@
 variable first-element
 variable last-element
 
-( Eat a char out of the cmd value. )
-: eat-char ( -- ) ed-cmd-len 1- to ed-cmd-len
-    ed-cmd 1+ to ed-cmd ;
+( Eat a char out of the cmd value. Remove spaces that would )
+( be irrelevant in the contexts where this word is called. )
+: eat-char ( -- ) ed-cmd ed-cmd-len skip-char-and-spaces
+    to ed-cmd-len to ed-cmd ;
 
 ( Try to read an element of a range. Store it at the given )
 ( address. )
@@ -86,10 +87,12 @@ variable last-element
 ( command unchanged. )
 : ed-read-range ( c-addr1 u1 -- lst c-addr2 u2 )
     dup 0= if 2drop list-init 0 0 exit then ( empty line )
+    skip-spaces
     2dup to ed-cmd-len to ed-cmd false to range-error
     parse-range sanitize-range
     range-error if list-init rot rot
-                else 2drop gen-range ed-cmd ed-cmd-len then ;
+                else 2drop gen-range ed-cmd ed-cmd-len
+                    skip-spaces then ;
 
 \ #SI
 ( -------------------------- Test --------------------------- )
