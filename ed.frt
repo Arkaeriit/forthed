@@ -15,13 +15,19 @@
 0 value ed-mode
 0 value ed-quit
 0 value ed-file-modified
+2 cells buffer: ed-default-filename
 
 ( Initializes the editor. )
 : ed-init ( -- ) list-init to ed-lst
     0 to ed-current-line 
     ed-mode-command to ed-mode
     0 to ed-quit
-    false to ed-file-modified ;
+    false to ed-file-modified
+    ed-default-filename dup 0 swap ! cell+ 0 xallocate swap ! ;
+
+( Free the memory allocated by ed. )
+: ed-deinit ( -- ) ed-lst list-free ed-default-filename cell+
+    @ xfree ;
 
 ( Print the famous error message. )
 : ed-error ( -- ) ." ?" cr ;
@@ -79,8 +85,28 @@
 
 ( ------------------- Reading and writing ------------------- )
 
+( Forthed can read and write Forth blocks, files, or both. )
+( The specific read and write implementation are handled in )
+( separate files for either of the 3 cases. )
+
 ( Set the file as modified. )
 : ed-touch-file ( -- ) true to ed-file-modified ;
+
+( Set the default filename. Copy the string. )
+: ed-set-default-filename ( c-addr u -- ) ed-default-filename
+    cell+ dup @ xfree over xallocate swap !
+    dup ed-default-filename !
+    ed-default-filename cell+ @ swap move ;
+
+( Get the default filename as a string. )
+: ed-get-default-filename ( c-addr u -- ) ed-default-filename
+    dup cell+ @ swap @ ;
+
+( If the given string is not empty return it with leading )
+( spaces skiped. If it is empty, return the defaut filename. )
+: ed-defaut-filename-if-needed ( c-addr1 u1 -- c-addr2 u2 )
+    skip-spaces dup 0=
+        if 2drop ed-get-default-filename then ;
 
 ( ----------------------- Input mode ------------------------ )
 
@@ -156,6 +182,12 @@ ed-line-size buffer: ed-line
 ( -------------------------- Test --------------------------- )
 
 ed-init
+s" file.txt" ed-set-default-filename depth . cr
+ed-get-default-filename type depth . cr
+s"    otherfile.docx" ed-defaut-filename-if-needed type cr
+s"    " ed-defaut-filename-if-needed type cr
+depth . cr
+
 ed 0a
 ed first line
 ed second line
@@ -165,5 +197,5 @@ ed between
 ed .
 ed-lst slist-print
 ed-repl
-ed-lst list-free
+ed-deinit
 bye
