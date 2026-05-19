@@ -14,12 +14,14 @@
 0 value ed-current-line
 0 value ed-mode
 0 value ed-quit
+0 value ed-file-modified
 
 ( Initializes the editor. )
 : ed-init ( -- ) list-init to ed-lst
     0 to ed-current-line 
     ed-mode-command to ed-mode
-    0 to ed-quit ;
+    0 to ed-quit
+    false to ed-file-modified ;
 
 ( Print the famous error message. )
 : ed-error ( -- ) ." ?" cr ;
@@ -75,12 +77,17 @@
     dup dup ed-range-1-to-size
     swap ed-check-range-ordered and ;
 
+( ------------------- Reading and writing ------------------- )
+
+( Set the file as modified. )
+: ed-touch-file ( -- ) true to ed-file-modified ;
+
 ( ----------------------- Input mode ------------------------ )
 
 ( Process a line input in the input mode. )
 : ed-process-input ( c-addr u -- ) 2dup s" ." compare 0= if
         2drop ed-mode-command to ed-mode else
-    ed-current-line ed-lst slist-add
+    ed-touch-file ed-current-line ed-lst slist-add
     ed-current-line 1+ to ed-current-line then ;
 
 ( ----------------------- Normal mode ----------------------- )
@@ -110,7 +117,8 @@
 ( Execute the d command. )
 : action-d ( addr -- ) @ 1- ed-lst list-delete ;
 : ed-command-d ( range -- ) ed-range-action ed-error-command
-    list-reverse dup ['] action-d swap list-exec list-free ;
+    list-reverse dup ['] action-d swap list-exec list-free
+    ed-touch-file ;
 
 ( Execute the p command. )
 : action-p ( c-addr u -- ) type cr ;
