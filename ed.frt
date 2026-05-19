@@ -44,6 +44,11 @@
 : ed-range-default-cl ( range -- range ) dup list-size 0= if
     dup ed-current-line swap nlist-append then ;
 
+( If the given range is empty, make a range with the whole )
+( file in it.)
+: ed-range-default-whole ( range -- range )
+    dup list-size 0= if s" 1;$?" ed-read-range 2drop then ;
+
 ( Return true if all the values in the range are between 0 )
 ( and the text list size. )
 : ed-range-0-to-size ( range -- f ) 0 ed-lst list-size
@@ -77,11 +82,20 @@
 : ed-range-input ( range -- range f ) ed-range-default-cl
     dup dup ed-range-0-to-size swap ed-range-size-1 and ;
 
+( Return true if the range is for the whole file. )
+: ed-range-is-whole-file ( range -- range f ) dup list-size
+    ed-lst list-size = ;
+
 ( Prepare a range for an action on lines. Return true if the )
 ( range is valid. )
 : ed-range-action ( range -- range f ) ed-range-default-cl
     dup dup ed-range-1-to-size
     swap ed-check-range-ordered and ;
+
+( Prepare a range for action on the whole file. Return true )
+( if the range is valid. )
+: ed-range-whole-file ( range -- range f )
+    ed-range-default-whole dup ed-range-1-to-size ;
 
 ( ------------------- Reading and writing ------------------- )
 
@@ -107,6 +121,12 @@
 : ed-defaut-filename-if-needed ( c-addr1 u1 -- c-addr2 u2 )
     skip-spaces dup 0=
         if 2drop ed-get-default-filename then ;
+
+( Write a range of lines to the given _filename_. )
+defer ed-write-to-file ( c-addr u range -- )
+
+( Append a range of lines to the given _filename_. )
+defer ed-append-to-file ( c-addr u range -- )
 
 ( ----------------------- Input mode ------------------------ )
 
@@ -151,12 +171,20 @@
 : ed-command-p ( range -- ) ed-range-action ed-error-command
     dup ['] action-p ed-exec-on-range list-free ;
 
+( Execute the w command. )
+: ed-command-w ( range c-addr u -- )
+    ed-defaut-filename-if-needed
+    over ed-range-whole-file ed-error-command
+    ed-range-is-whole-file if false to ed-file-modified then
+    dup >r ed-write-to-file r> list-free ;
+
 ( Process a line input in the command mode.)
 : ed-process-command ( c-addr u -- ) ed-read-range
     2dup s" a" compare 0= if 2drop ed-command-a exit then
     2dup s" Q" compare 0= if 2drop ed-command-Q exit then
     2dup s" p" compare 0= if 2drop ed-command-p exit then
     2dup s" d" compare 0= if 2drop ed-command-d exit then
+    2dup s" w" compare 0= if       ed-command-w exit then
     2dup s" "  compare 0= if 2drop list-free    exit then
     2drop list-free ed-error ;
 
