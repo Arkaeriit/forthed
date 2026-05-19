@@ -33,8 +33,10 @@
 : ed-error ( -- ) ." ?" cr ;
 
 ( Print the error and exit the caller if the flag is false. )
-: ed-error-command ( f -- ) postpone 0= postpone if
-    postpone ed-error postpone exit postpone then ; immediate
+( Free range if it exits. )
+: ed-error-command ( range f -- range | ) postpone 0=
+    postpone if postpone ed-error postpone list-free
+        postpone exit postpone then ; immediate
 
 \ #IR range-parser.frt
 
@@ -63,7 +65,7 @@
 : ed-range-size-1 ( range -- f ) list-size 1 = ;
 
 ( Check that the range is empty. )
-: ed-check-range-empty ( range -- f ) list-size 0= ;
+: ed-check-range-empty ( range -- range f ) dup list-size 0= ;
 
 ( Check that the values in the range are ordered. It should )
 ( be the case because of how the range parser works, but )
@@ -157,7 +159,7 @@ defer ed-append-to-file ( c-addr u range -- )
 
 ( Execute the Q command. )
 : ed-command-Q ( range -- )
-    ( ed-check-range-empty ed-error-command ) list-free
+    ed-check-range-empty ed-error-command list-free
     1 to ed-quit ;
 
 ( Execute the d command. )
