@@ -175,9 +175,9 @@ defer ed-append-to-file ( c-addr u range -- )
 ( Execute the w command. )
 : ed-command-w ( range c-addr u -- )
     ed-defaut-filename-if-needed
-    2 pick ed-range-whole-file ed-error-command
+    rot ed-range-whole-file ed-error-command
     ed-range-is-whole-file if false to ed-file-modified then
-    ed-write-to-file list-free ;
+    >r r@ ed-write-to-file r> list-free ;
 
 ( Process a line input in the command mode.)
 : ed-process-command ( c-addr u -- ) ed-read-range

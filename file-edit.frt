@@ -15,7 +15,7 @@
 
 ( Do the write action on the given range. )
 : file-edit-with-fam ( c-addr u range fam -- ) >r rot rot r>
-    set-file-being-edited 0= if list-free then
+    set-file-being-edited 0= if exit then
     ['] file-edit-write-line ed-exec-on-range
     file-being-edited close-file abort" Can't close file" ;
 
