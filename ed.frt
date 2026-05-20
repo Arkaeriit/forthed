@@ -1,5 +1,6 @@
 \ #IR txt-list.frt
 \ #IN number-list.frt
+\ #IR str-buff.frt
 ( ------------------------ ED editor ------------------------ )
 ( ----------------------------  ----------------------------- )
 
@@ -15,7 +16,7 @@
 0 value ed-mode
 0 value ed-quit
 0 value ed-file-modified
-2 cells buffer: ed-default-filename
+str-buff: ed-default-filename
 
 ( Initializes the editor. )
 : ed-init ( -- ) list-init to ed-lst
@@ -23,11 +24,11 @@
     ed-mode-command to ed-mode
     0 to ed-quit
     false to ed-file-modified
-    ed-default-filename dup 0 swap ! cell+ 0 xallocate swap ! ;
+    ed-default-filename str-buff-init ;
 
 ( Free the memory allocated by ed. )
-: ed-deinit ( -- ) ed-lst list-free ed-default-filename cell+
-    @ xfree ;
+: ed-deinit ( -- ) ed-lst list-free
+    ed-default-filename str-buff-free ;
 
 ( Print the famous error message. )
 : ed-error ( -- ) ." ?" cr ;
@@ -109,14 +110,12 @@
 : ed-touch-file ( -- ) true to ed-file-modified ;
 
 ( Set the default filename. Copy the string. )
-: ed-set-default-filename ( c-addr u -- ) ed-default-filename
-    cell+ dup @ xfree over xallocate swap !
-    dup ed-default-filename !
-    ed-default-filename cell+ @ swap move ;
+: ed-set-default-filename ( c-addr u -- )
+    ed-default-filename str-buff-set ;
 
 ( Get the default filename as a string. )
-: ed-get-default-filename ( c-addr u -- ) ed-default-filename
-    dup cell+ @ swap @ ;
+: ed-get-default-filename ( c-addr u -- )
+    ed-default-filename str-buff-get ;
 
 ( If the given string is not empty return it with leading )
 ( spaces skiped. If it is empty, return the defaut filename. )
