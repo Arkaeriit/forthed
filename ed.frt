@@ -175,20 +175,29 @@ defer ed-append-to-file ( c-addr u range -- )
 
 ( Execute the w command. )
 : ed-command-w ( range c-addr u -- )
+2dup type cr
     ed-defaut-filename-if-needed
-    over ed-range-whole-file ed-error-command
+2dup type cr
+depth . cr
+    2 pick ed-range-whole-file ed-error-command
+depth . cr
     ed-range-is-whole-file if false to ed-file-modified then
-    dup >r ed-write-to-file r> list-free ;
+depth . cr
+dup ." >>" list-size . cr
+>r 2dup type cr r>
+    ed-write-to-file depth . cr list-free ;
 
 ( Process a line input in the command mode.)
 : ed-process-command ( c-addr u -- ) ed-read-range
-    2dup s" a" compare 0= if 2drop ed-command-a exit then
-    2dup s" Q" compare 0= if 2drop ed-command-Q exit then
-    2dup s" p" compare 0= if 2drop ed-command-p exit then
-    2dup s" d" compare 0= if 2drop ed-command-d exit then
-    2dup s" w" compare 0= if       ed-command-w exit then
-    2dup s" "  compare 0= if 2drop list-free    exit then
-    2drop list-free ed-error ;
+    2dup s" "  compare 0= if 2drop list-free exit then
+    over c@ case
+        'a' of 2drop ed-command-a exit endof
+        'Q' of 2drop ed-command-Q exit endof
+        'p' of 2drop ed-command-p exit endof
+        'd' of 2drop ed-command-d exit endof
+        'w' of       ed-command-w exit endof
+        >r 2drop list-free ed-error r>
+    endcase ;
 
 ( Process a line input. )
 : ed-process ( c-addr u -- ) ed-mode case
