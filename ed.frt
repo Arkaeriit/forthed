@@ -49,7 +49,7 @@
 ( If the given range is empty, make a range with the whole )
 ( file in it.)
 : ed-range-default-whole ( range -- range )
-    dup list-size 0= if s" 1;$?" ed-read-range 2drop then ;
+    dup list-size 0= if list-free s" 1;$?" ed-read-range 2drop then ;
 
 ( Return true if all the values in the range are between 0 )
 ( and the text list size. )
@@ -97,7 +97,7 @@
 ( Prepare a range for action on the whole file. Return true )
 ( if the range is valid. )
 : ed-range-whole-file ( range -- range f )
-    ed-range-default-whole dup ed-range-1-to-size ;
+ ed-range-default-whole dup ed-range-1-to-size ;
 
 ( ------------------- Reading and writing ------------------- )
 
@@ -175,17 +175,10 @@ defer ed-append-to-file ( c-addr u range -- )
 
 ( Execute the w command. )
 : ed-command-w ( range c-addr u -- )
-2dup type cr
     ed-defaut-filename-if-needed
-2dup type cr
-depth . cr
     2 pick ed-range-whole-file ed-error-command
-depth . cr
     ed-range-is-whole-file if false to ed-file-modified then
-depth . cr
-dup ." >>" list-size . cr
->r 2dup type cr r>
-    ed-write-to-file depth . cr list-free ;
+    ed-write-to-file list-free ;
 
 ( Process a line input in the command mode.)
 : ed-process-command ( c-addr u -- ) ed-read-range
@@ -218,6 +211,7 @@ ed-line-size buffer: ed-line
         ed-line ed-line-size accept ed-line swap ed-process
     ed-quit until ;
 
+\ #SI
 ( -------------------------- Test --------------------------- )
 
 ed-init
@@ -238,3 +232,4 @@ ed-lst slist-print
 ed-repl
 ed-deinit
 bye
+
