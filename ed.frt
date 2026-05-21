@@ -201,13 +201,22 @@ defer ed-append-to-file ( c-addr u range -- )
 : ed-command-p ( range -- ) ed-range-action ed-error-command
     dup ['] action-p ed-exec-on-range list-free ;
 
-( Execute the w command. )
-: ed-command-w ( range -- )
+( Execute the w or w command. )
+0 value ed-wW-xt
+: ed-command-w-or-W ( range -- )
     ed-cmd-argument-get
     ed-defaut-filename-if-needed
     rot ed-range-whole-file ed-error-command
     ed-range-is-whole-file if false to ed-file-modified then
-    >r r@ ed-write-to-file r> list-free ;
+    >r r@ ed-wW-xt execute r> list-free ;
+
+( Execute the w command. )
+: ed-command-w ( range -- )
+    ['] ed-write-to-file to ed-wW-xt ed-command-w-or-W ;
+
+( Execute the w command. )
+: ed-command-W ( range -- )
+    ['] ed-append-to-file to ed-wW-xt ed-command-w-or-W ;
 
 ( Execute the f command. )
 : ed-command-f ( range -- ) ed-no-range-command
@@ -225,6 +234,7 @@ defer ed-append-to-file ( c-addr u range -- )
         'd' of ed-command-d endof
         'w' of ed-command-w endof
         'f' of ed-command-f endof
+        'W' of ed-command-W endof
         >r 2drop list-free ed-error r>
     endcase ;
 
