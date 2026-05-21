@@ -43,6 +43,14 @@ str-buff: ed-cmd-argument
     postpone if postpone ed-error postpone list-free
         postpone exit postpone then ; immediate
 
+( Get the command argument as a string. )
+: ed-cmd-argument-get ( -- c-addr u ) ed-cmd-argument
+    str-buff-get ;
+
+( Set the command argument as a string. )
+: ed-cmd-argument-set ( c-addr u -- ) ed-cmd-argument
+    str-buff-set ;
+
 \ #IR range-parser.frt
 
 ( ---------------------- Command range ---------------------- )
@@ -54,7 +62,8 @@ str-buff: ed-cmd-argument
 ( If the given range is empty, make a range with the whole )
 ( file in it.)
 : ed-range-default-whole ( range -- range )
-    dup list-size 0= if list-free s" 1;$?" ed-read-range 2drop then ;
+    dup list-size 0=
+    if list-free s" 1;$?" ed-read-range 2drop then ;
 
 ( Return true if all the values in the range are between 0 )
 ( and the text list size. )
@@ -71,6 +80,12 @@ str-buff: ed-cmd-argument
 
 ( Check that the range is empty. )
 : ed-check-range-empty ( range -- range f ) dup list-size 0= ;
+
+( Check that the range is empty. Error and exit if it isn't. )
+( Free the range in any case. )
+: ed-no-range-command ( range -- )
+    postpone ed-check-range-empty postpone ed-error-command
+    postpone list-free ; immediate
 
 ( Check that the values in the range are ordered. It should )
 ( be the case because of how the range parser works, but )
@@ -147,11 +162,11 @@ defer ed-append-to-file ( c-addr u range -- )
 ( the second character in the prefix value and store the )
 ( rest in the command argument. )
 : ed-read-cmd ( c-addr u -- c ) over c@ >r skip-char
-    ?dup 0= if drop 0 to ed-cmd-suffix s" " ed-cmd-argument
-               str-buff-set r> exit then
+    ?dup 0= if drop 0 to ed-cmd-suffix s" "
+                ed-cmd-argument-set r> exit then
     over c@ to ed-cmd-suffix ( I use the fact that no cmd )
                              ( use both argument and sufix. )
-    skip-spaces ed-cmd-argument str-buff-set r> ;
+    skip-spaces ed-cmd-argument-set r> ;
 
 ( Execute an action on all lines in the given range, and set )
 ( the current line for each ones. The xt must have prototype )
@@ -172,7 +187,7 @@ defer ed-append-to-file ( c-addr u range -- )
 
 ( Execute the Q command. )
 : ed-command-Q ( range -- )
-    ed-check-range-empty ed-error-command list-free
+    ed-no-range-command
     1 to ed-quit ;
 
 ( Execute the d command. )
@@ -188,21 +203,28 @@ defer ed-append-to-file ( c-addr u range -- )
 
 ( Execute the w command. )
 : ed-command-w ( range -- )
-    ed-cmd-argument str-buff-get
+    ed-cmd-argument-get
     ed-defaut-filename-if-needed
     rot ed-range-whole-file ed-error-command
     ed-range-is-whole-file if false to ed-file-modified then
     >r r@ ed-write-to-file r> list-free ;
 
+( Execute the f command. )
+: ed-command-f ( range -- ) ed-no-range-command
+    ed-cmd-argument-get ?dup 0=
+        if drop ed-get-default-filename type cr
+        else ed-set-default-filename then ;
+
 ( Process a line input in the command mode.)
 : ed-process-command ( c-addr u -- ) ed-read-range
     2dup s" "  compare 0= if 2drop list-free exit then
     ed-read-cmd case
-        'a' of ed-command-a exit endof
-        'Q' of ed-command-Q exit endof
-        'p' of ed-command-p exit endof
-        'd' of ed-command-d exit endof
-        'w' of ed-command-w exit endof
+        'a' of ed-command-a endof
+        'Q' of ed-command-Q endof
+        'p' of ed-command-p endof
+        'd' of ed-command-d endof
+        'w' of ed-command-w endof
+        'f' of ed-command-f endof
         >r 2drop list-free ed-error r>
     endcase ;
 
