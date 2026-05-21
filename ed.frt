@@ -17,6 +17,8 @@
 0 value ed-quit
 0 value ed-file-modified
 str-buff: ed-default-filename
+0 value ed-cmd-suffix
+str-buff: ed-cmd-argument
 
 ( Initializes the editor. )
 : ed-init ( -- ) list-init to ed-lst
@@ -24,11 +26,13 @@ str-buff: ed-default-filename
     ed-mode-command to ed-mode
     0 to ed-quit
     false to ed-file-modified
-    ed-default-filename str-buff-init ;
+    ed-default-filename str-buff-init
+    ed-cmd-argument str-buff-init ;
 
 ( Free the memory allocated by ed. )
 : ed-deinit ( -- ) ed-lst list-free
-    ed-default-filename str-buff-free ;
+    ed-default-filename str-buff-free
+    ed-cmd-argument str-buff-free ;
 
 ( Print the famous error message. )
 : ed-error ( -- ) ." ?" cr ;
@@ -139,6 +143,16 @@ defer ed-append-to-file ( c-addr u range -- )
 
 ( ----------------------- Normal mode ----------------------- )
 
+( Parse the given command. Return the first caracter. Store )
+( the second character in the prefix value and store the )
+( rest in the command argument. )
+: ed-read-cmd ( c-addr u -- c ) over c@ >r skip-char
+    ?dup 0= if drop 0 to ed-cmd-suffix s" " ed-cmd-argument
+               str-buff-set r> exit then
+    over c@ to ed-cmd-suffix ( I use the fact that no cmd )
+                             ( use both argument and sufix. )
+    skip-spaces ed-cmd-argument str-buff-set r> ;
+
 ( Execute an action on all lines in the given range, and set )
 ( the current line for each ones. The xt must have prototype )
 ( [c-addr n -- ]. Convert between the 0-indexing of the list )
@@ -173,7 +187,8 @@ defer ed-append-to-file ( c-addr u range -- )
     dup ['] action-p ed-exec-on-range list-free ;
 
 ( Execute the w command. )
-: ed-command-w ( range c-addr u -- )
+: ed-command-w ( range -- )
+    ed-cmd-argument str-buff-get
     ed-defaut-filename-if-needed
     rot ed-range-whole-file ed-error-command
     ed-range-is-whole-file if false to ed-file-modified then
@@ -182,12 +197,12 @@ defer ed-append-to-file ( c-addr u range -- )
 ( Process a line input in the command mode.)
 : ed-process-command ( c-addr u -- ) ed-read-range
     2dup s" "  compare 0= if 2drop list-free exit then
-    over c@ case
-        'a' of 2drop ed-command-a exit endof
-        'Q' of 2drop ed-command-Q exit endof
-        'p' of 2drop ed-command-p exit endof
-        'd' of 2drop ed-command-d exit endof
-        'w' of       ed-command-w exit endof
+    ed-read-cmd case
+        'a' of ed-command-a exit endof
+        'Q' of ed-command-Q exit endof
+        'p' of ed-command-p exit endof
+        'd' of ed-command-d exit endof
+        'w' of ed-command-w exit endof
         >r 2drop list-free ed-error r>
     endcase ;
 
