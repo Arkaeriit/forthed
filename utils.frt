@@ -26,3 +26,4 @@
 ( Return true if the string starts with a number. )
 : start-with-num ( c-addr u -- f ) dup >r >number-s r> <>
     nip nip ;
+

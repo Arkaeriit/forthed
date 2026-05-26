@@ -218,7 +218,7 @@ defer ed-append-to-file ( c-addr u range -- f )
     ['] ed-write-to-file to ed-wW-xt ed-command-w-or-W ;
 
 ( Execute the w command. )
-: ed-command-W ( range -- )
+: ed-command-Wa ( range -- )
     ['] ed-append-to-file to ed-wW-xt ed-command-w-or-W ;
 
 ( Execute the f command. )
@@ -231,13 +231,13 @@ defer ed-append-to-file ( c-addr u range -- f )
 : ed-process-command ( c-addr u -- ) ed-read-range
     2dup s" "  compare 0= if 2drop list-free exit then
     ed-read-cmd case
-        'a' of ed-command-a endof
-        'Q' of ed-command-Q endof
-        'p' of ed-command-p endof
-        'd' of ed-command-d endof
-        'w' of ed-command-w endof
-        'f' of ed-command-f endof
-        'W' of ed-command-W endof
+        'a' of ed-command-a  endof
+        'Q' of ed-command-Q  endof
+        'p' of ed-command-p  endof
+        'd' of ed-command-d  endof
+        'w' of ed-command-w  endof
+        'f' of ed-command-f  endof
+        'W' of ed-command-Wa endof
         >r 2drop list-free ed-error r>
     endcase ;
 
