@@ -142,11 +142,13 @@ str-buff: ed-cmd-argument
     skip-spaces dup 0=
         if 2drop ed-get-default-filename then ;
 
-( Write a range of lines to the given _filename_. )
-defer ed-write-to-file ( c-addr u range -- )
+( Write a range of lines to the given _filename_. Return )
+( true if this worked. )
+defer ed-write-to-file ( c-addr u range -- f )
 
-( Append a range of lines to the given _filename_. )
-defer ed-append-to-file ( c-addr u range -- )
+( Append a range of lines to the given _filename_. Return )
+( true if this worked. )
+defer ed-append-to-file ( c-addr u range -- f )
 
 ( ----------------------- Input mode ------------------------ )
 
@@ -208,7 +210,8 @@ defer ed-append-to-file ( c-addr u range -- )
     ed-defaut-filename-if-needed
     rot ed-range-whole-file ed-error-command
     ed-range-is-whole-file if false to ed-file-modified then
-    >r r@ ed-wW-xt execute r> list-free ;
+    >r r@ ed-wW-xt execute r> list-free
+    0= if ed-error then ;
 
 ( Execute the w command. )
 : ed-command-w ( range -- )
