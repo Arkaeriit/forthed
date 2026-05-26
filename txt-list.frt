@@ -31,15 +31,15 @@
     
 ( Pad all strings to the given size with the given char. )
 ( Truncate strings that are longer than the given size. )
-bl value slist-pad
+bl value slist-padding
 : padding ( addr -- ) dup @ slist-len < if
     dup str-get slist-len swap
-    ?do dup i + slist-pad swap c! loop drop
+    ?do dup i + slist-padding swap c! loop drop
     slist-len swap !
     else drop then ;
 : slist-pad ( c len lst -- ) 2dup slist-truncate
     2dup swap cell+ swap list-resize-all-nodes
-    2 pick to slist-pad ['] padding swap list-exec 2drop ;
+    2 pick to slist-padding ['] padding swap list-exec 2drop ;
 
 ( Prints the content of a string list. )
 : str-print ( addr -- ) str-get type cr ;
