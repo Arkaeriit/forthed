@@ -46,7 +46,7 @@
     0= if 2drop false exit then
     >number-s try-skip 0= if drop 2drop false exit then
     try-parse-one-block if to blocks-start true
-        else 2drop drop false ;
+        else 2drop drop false then ;
 
 ( Return true if the start block is lower than the end )
 ( block. As the numbers are parsed as unsigned, no need to )
