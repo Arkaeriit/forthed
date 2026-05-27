@@ -86,7 +86,7 @@ variable last-element
 ( In case of range error, return an empty list and the )
 ( command unchanged. )
 : ed-read-range ( c-addr1 u1 -- lst c-addr2 u2 )
-    dup 0= if 2drop list-init 0 0 exit then ( empty line )
+    dup 0= if 2drop list-init s" " exit then ( empty line )
     skip-spaces
     2dup to ed-cmd-len to ed-cmd false to range-error
     parse-range sanitize-range

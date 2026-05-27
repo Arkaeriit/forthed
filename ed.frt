@@ -229,7 +229,7 @@ defer ed-append-to-file ( c-addr u range -- f )
 
 ( Process a line input in the command mode.)
 : ed-process-command ( c-addr u -- ) ed-read-range
-    2dup s" "  compare 0= if 2drop list-free exit then
+    dup 0= if 2drop list-free ed-error exit then
     ed-read-cmd case
         'a' of ed-command-a  endof
         'Q' of ed-command-Q  endof
@@ -238,7 +238,7 @@ defer ed-append-to-file ( c-addr u range -- f )
         'w' of ed-command-w  endof
         'f' of ed-command-f  endof
         'W' of ed-command-Wa endof
-        >r 2drop list-free ed-error r>
+        >r list-free ed-error r>
     endcase ;
 
 ( Process a line input. )
