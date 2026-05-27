@@ -119,6 +119,11 @@
     prepare-file ['] add-line-to-block ed-exec-on-range
     fill-with-space true ; is ed-write-to-file
 
+( ed-append-to-file )
+:noname ( c-addr u range -- f ) drop 2drop false
+    ." Can't append to blocks." cr ;
+    is ed-append-to-file
+
 \ #SI
 ( -------------------------- Test --------------------------- )
 
