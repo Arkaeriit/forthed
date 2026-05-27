@@ -233,6 +233,7 @@ defer ed-append-to-file ( c-addr u range -- f )
     ed-read-cmd case
         'a' of ed-command-a  endof
         'Q' of ed-command-Q  endof
+         4  of ed-command-Q  endof
         'p' of ed-command-p  endof
         'd' of ed-command-d  endof
         'w' of ed-command-w  endof
