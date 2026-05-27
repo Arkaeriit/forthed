@@ -34,6 +34,7 @@
 :noname ( c-addr u range -- f ) w/o false file-edit-with-fam ;
     is ed-append-to-file
 
+\ #SI
 ( -------------------------- Test --------------------------- )
 
 ed-init
