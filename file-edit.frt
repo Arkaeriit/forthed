@@ -1,4 +1,3 @@
-\ #IR ed.frt
 ( ------------------- Reading and writing ------------------- )
 
 0 value file-being-edited
