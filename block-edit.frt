@@ -120,6 +120,9 @@
     prepare-file ['] add-line-to-block ed-exec-on-range
     fill-with-space true ; is ed-write-to-file
 
+\ #SI
+( -------------------------- Test --------------------------- )
+
 ed-init
 ed 0a
 ed abcd
