@@ -7,8 +7,8 @@
 ( Return true if it worked. )
 : set-file-being-edited ( c-addr u fam f[create-flag] -- f )
     if create-file else open-file then
-    if ." Can't open file" false to file-edit-worked cr false
-    else to file-being-edited true then ;
+    if ." Can't open file" cr false to file-edit-worked cr
+        false else to file-being-edited true then ;
 
 ( Writing to a file )
 : file-edit-write-line ( c-addr u -- ) file-being-edited 
