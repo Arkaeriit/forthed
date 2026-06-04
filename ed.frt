@@ -51,6 +51,13 @@ str-buff: ed-cmd-argument
 : ed-cmd-argument-set ( c-addr u -- ) ed-cmd-argument
     str-buff-set ;
 
+( Set the file as modified. )
+: ed-touch-file ( -- ) true to ed-file-modified ;
+
+( Remove all lines from the list. )
+: ed-wipe-file ( -- ) ed-lst list-free list-init to ed-lst
+    0 to ed-current-line ed-touch-file ;
+
 \ #IR range-parser.frt
 
 ( ---------------------- Command range ---------------------- )
@@ -125,9 +132,6 @@ str-buff: ed-cmd-argument
 ( The specific read and write implementation are handled in )
 ( separate files for either of the 3 cases. )
 
-( Set the file as modified. )
-: ed-touch-file ( -- ) true to ed-file-modified ;
-
 ( Set the default filename. Copy the string. )
 : ed-set-default-filename ( c-addr u -- )
     ed-default-filename str-buff-set ;
@@ -149,6 +153,10 @@ defer ed-write-to-file ( c-addr u range -- f )
 ( Append a range of lines to the given _filename_. Return )
 ( true if this worked. )
 defer ed-append-to-file ( c-addr u range -- f )
+
+( Insert the content of the file at the given index. Return )
+( true if this worked. )
+defer ed-read-file ( c-addr u1 u2 -- f )
 
 ( ----------------------- Input mode ------------------------ )
 
@@ -221,6 +229,14 @@ defer ed-append-to-file ( c-addr u range -- f )
 : ed-command-Wa ( range -- )
     ['] ed-append-to-file to ed-wW-xt ed-command-w-or-W ;
 
+( Execute the e command. )
+: ed-command-e ( range -- ) ed-no-range-command
+    ed-cmd-argument-get
+    ed-defaut-filename-if-needed
+    2dup ed-set-default-filename
+    ed-wipe-file
+    0 ed-read-file ;
+
 ( Execute the f command. )
 : ed-command-f ( range -- ) ed-no-range-command
     ed-cmd-argument-get ?dup 0=
@@ -239,6 +255,7 @@ defer ed-append-to-file ( c-addr u range -- f )
         'w' of ed-command-w  endof
         'f' of ed-command-f  endof
         'W' of ed-command-Wa endof
+        'e' of ed-command-e  endof
         >r list-free ed-error r>
     endcase ;
 
