@@ -39,7 +39,7 @@
     0= if r> drop exit then
     0 xallocate 0 begin drop xfree
         opened-file read-line-allocated while
-        2dup r@ ed-lst slist-add r> 1+ >r repeat
+        2dup r@ ed-insert-line r> 1+ >r repeat
     drop xfree r> drop true ; is ed-read-file
 
 \ #SI

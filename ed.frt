@@ -58,6 +58,11 @@ str-buff: ed-cmd-argument
 : ed-wipe-file ( -- ) ed-lst list-free list-init to ed-lst
     0 to ed-current-line ed-touch-file ;
 
+( Insert a line at the given index and sets the current line )
+( to it. Notice the +1 to switch indexing. )
+: ed-insert-line ( c-addr u index -- ) >r r@ ed-lst slist-add
+    r> 1+ to ed-current-line ;
+
 \ #IR range-parser.frt
 
 ( ---------------------- Command range ---------------------- )
@@ -163,8 +168,7 @@ defer ed-read-file ( c-addr u1 u2 -- f )
 ( Process a line input in the input mode. )
 : ed-process-input ( c-addr u -- ) 2dup s" ." compare 0= if
         2drop ed-mode-command to ed-mode else
-    ed-touch-file ed-current-line ed-lst slist-add
-    ed-current-line 1+ to ed-current-line then ;
+    ed-touch-file ed-current-line ed-insert-line then ;
 
 ( ----------------------- Normal mode ----------------------- )
 
