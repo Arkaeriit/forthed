@@ -235,7 +235,8 @@ defer ed-read-file ( c-addr u1 u2 -- f )
     ed-default-filename-if-needed
     2dup ed-set-default-filename
     ed-wipe-file
-    0 ed-read-file ;
+    0 ed-read-file
+    0= if ed-error then ;
 
 ( Execute the f command. )
 : ed-command-f ( range -- ) ed-no-range-command

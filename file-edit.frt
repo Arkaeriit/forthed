@@ -36,7 +36,7 @@
 
 ( ed-read-file )
 :noname ( c-addr u1 u2 -- f ) >r r/o false set-opened-file
-    dup 0= if r> drop exit then
+    0= if r> drop exit then
     0 xallocate 0 begin drop xfree
         opened-file read-line-allocated while
         2dup r@ ed-lst slist-add r> 1+ >r repeat
