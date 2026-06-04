@@ -124,6 +124,24 @@
     ." Can't append to blocks." cr ;
     is ed-append-to-file
 
+( --------------------- Reading blocks ---------------------- )
+
+( Insert all lines of block u2 at line u1 of the ed file. )
+( Return u1 + ed-lines-in-block. )
+: insert-block ( u1 u2 -- u3 ) block ed-lines-in-block 0 do
+    2dup ed-block-line-size i * + swap ed-block-line-size swap
+    ed-lst slist-add swap 1+ swap loop nip ;
+
+( Insert all lines of the block range at line u of the ed )
+( file. )
+: insert-blocks ( u -- ) blocks-end 1+ blocks-start do
+    i insert-block loop drop ;
+
+( ed-read-file )
+:noname ( c-addr u1 u2 -- f ) >r try-parse-blocks 0= if
+    r> drop false exit then
+    r> insert-blocks true ; is ed-read-file
+
 \ #SI
 ( -------------------------- Test --------------------------- )
 
