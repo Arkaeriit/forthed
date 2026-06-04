@@ -141,8 +141,8 @@ str-buff: ed-cmd-argument
     ed-default-filename str-buff-get ;
 
 ( If the given string is not empty return it with leading )
-( spaces skiped. If it is empty, return the defaut filename. )
-: ed-defaut-filename-if-needed ( c-addr1 u1 -- c-addr2 u2 )
+( spaces skiped. If it is empty, return the default filename. )
+: ed-default-filename-if-needed ( c-addr1 u1 -- c-addr2 u2 )
     skip-spaces dup 0=
         if 2drop ed-get-default-filename then ;
 
@@ -215,7 +215,7 @@ defer ed-read-file ( c-addr u1 u2 -- f )
 0 value ed-wW-xt
 : ed-command-w-or-W ( range -- )
     ed-cmd-argument-get
-    ed-defaut-filename-if-needed
+    ed-default-filename-if-needed
     rot ed-range-whole-file ed-error-command
     ed-range-is-whole-file if false to ed-file-modified then
     >r r@ ed-wW-xt execute r> list-free
@@ -232,7 +232,7 @@ defer ed-read-file ( c-addr u1 u2 -- f )
 ( Execute the e command. )
 : ed-command-e ( range -- ) ed-no-range-command
     ed-cmd-argument-get
-    ed-defaut-filename-if-needed
+    ed-default-filename-if-needed
     2dup ed-set-default-filename
     ed-wipe-file
     0 ed-read-file ;
@@ -284,8 +284,8 @@ ed-line-size buffer: ed-line
 ed-init
 s" file.txt" ed-set-default-filename depth . cr
 ed-get-default-filename type depth . cr
-s"    otherfile.docx" ed-defaut-filename-if-needed type cr
-s"    " ed-defaut-filename-if-needed type cr
+s"    otherfile.docx" ed-default-filename-if-needed type cr
+s"    " ed-default-filename-if-needed type cr
 depth . cr
 
 ed 0a
