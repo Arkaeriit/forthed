@@ -223,6 +223,12 @@ defer ed-read-file ( c-addr u1 u2 -- f )
 : ed-command-p ( range -- ) ed-range-action ed-error-command
     dup ['] action-p ed-exec-on-range list-free ;
 
+( Execute the n command. )
+: action-n ( c-addr u -- ) ed-current-line 5 right-pad-u.
+    8 0 do space loop type cr ;
+: ed-command-n ( range -- ) ed-range-action ed-error-command
+    dup ['] action-n ed-exec-on-range list-free ;
+
 ( Execute the w or w command. )
 0 value ed-wW-xt
 : ed-command-w-or-W ( range -- )
@@ -270,6 +276,7 @@ defer ed-read-file ( c-addr u1 u2 -- f )
         'q' of ed-command-qq endof
          4  of ed-command-Q  endof
         'p' of ed-command-p  endof
+        'n' of ed-command-n  endof
         'd' of ed-command-d  endof
         'w' of ed-command-w  endof
         'f' of ed-command-f  endof

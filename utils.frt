@@ -27,3 +27,8 @@
 : start-with-num ( c-addr u -- f ) dup >r >number-s r> <>
     nip nip ;
 
+( Print u1 left-aligned to u2 character fields. )
+: right-pad-u. ( u u -- ) >r s>d <#
+    begin # 2dup d>s 0= r> 1- >r until
+    r> dup 0 > if 0 do bl hold loop else drop then #> type  ;
+
