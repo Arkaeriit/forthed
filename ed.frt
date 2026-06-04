@@ -207,6 +207,11 @@ defer ed-read-file ( c-addr u1 u2 -- f )
     ed-no-range-command
     1 to ed-quit ;
 
+( Execute the q command. )
+: ed-command-qq ( range -- )  ed-file-modified
+    if ed-untouch list-free ed-error
+    else ed-command-Q then ;
+
 ( Execute the d command. )
 : action-d ( addr -- ) @ 1- ed-lst list-delete ed-touch-file ;
 : ed-command-d ( range -- ) ed-range-action ed-error-command
@@ -236,14 +241,19 @@ defer ed-read-file ( c-addr u1 u2 -- f )
 : ed-command-Wa ( range -- )
     ['] ed-append-to-file to ed-wW-xt ed-command-w-or-W ;
 
-( Execute the e command. )
-: ed-command-e ( range -- ) ed-no-range-command
+( Execute the E command. )
+: ed-command-E ( range -- ) ed-no-range-command
     ed-cmd-argument-get
     ed-default-filename-if-needed
     2dup ed-set-default-filename
     ed-wipe-file
     0 ed-read-file
     0= if ed-error then ed-untouch ;
+
+( Execute the e command. )
+: ed-command-ee ( range -- ) ed-file-modified
+    if ed-untouch list-free ed-error
+    else ed-command-E then ;
 
 ( Execute the f command. )
 : ed-command-f ( range -- ) ed-no-range-command
@@ -257,13 +267,15 @@ defer ed-read-file ( c-addr u1 u2 -- f )
     ed-read-cmd case
         'a' of ed-command-a  endof
         'Q' of ed-command-Q  endof
+        'q' of ed-command-qq endof
          4  of ed-command-Q  endof
         'p' of ed-command-p  endof
         'd' of ed-command-d  endof
         'w' of ed-command-w  endof
         'f' of ed-command-f  endof
         'W' of ed-command-Wa endof
-        'e' of ed-command-e  endof
+        'E' of ed-command-E  endof
+        'e' of ed-command-ee endof
         >r list-free ed-error r>
     endcase ;
 
