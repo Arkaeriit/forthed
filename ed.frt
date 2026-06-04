@@ -54,6 +54,9 @@ str-buff: ed-cmd-argument
 ( Set the file as modified. )
 : ed-touch-file ( -- ) true to ed-file-modified ;
 
+( Set the file as not modified. )
+: ed-untouch ( -- ) false to ed-file-modified ;
+
 ( Remove all lines from the list. )
 : ed-wipe-file ( -- ) ed-lst list-free list-init to ed-lst
     0 to ed-current-line ed-touch-file ;
@@ -205,10 +208,9 @@ defer ed-read-file ( c-addr u1 u2 -- f )
     1 to ed-quit ;
 
 ( Execute the d command. )
-: action-d ( addr -- ) @ 1- ed-lst list-delete ;
+: action-d ( addr -- ) @ 1- ed-lst list-delete ed-touch-file ;
 : ed-command-d ( range -- ) ed-range-action ed-error-command
-    list-reverse dup ['] action-d swap list-exec list-free
-    ed-touch-file ;
+    list-reverse dup ['] action-d swap list-exec list-free ;
 
 ( Execute the p command. )
 : action-p ( c-addr u -- ) type cr ;
@@ -221,7 +223,7 @@ defer ed-read-file ( c-addr u1 u2 -- f )
     ed-cmd-argument-get
     ed-default-filename-if-needed
     rot ed-range-whole-file ed-error-command
-    ed-range-is-whole-file if false to ed-file-modified then
+    ed-range-is-whole-file if ed-untouch then
     >r r@ ed-wW-xt execute r> list-free
     0= if ed-error then ;
 
@@ -240,7 +242,7 @@ defer ed-read-file ( c-addr u1 u2 -- f )
     2dup ed-set-default-filename
     ed-wipe-file
     0 ed-read-file
-    0= if ed-error then ;
+    0= if ed-error then ed-untouch ;
 
 ( Execute the f command. )
 : ed-command-f ( range -- ) ed-no-range-command
