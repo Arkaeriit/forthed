@@ -66,7 +66,7 @@
 0 value head
 0 value tail
 : list-reverse ( lst1 -- lst1 ) dup list-size 0= if exit then
-    dup dup to head dup list-size
+    dup to head dup list-size
     1- swap (list-get) dup to tail to edited-node
     head list-size 1- 0 swap ?do
         i head (list-get) dup edited-node !
