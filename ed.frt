@@ -210,6 +210,7 @@ defer ed-read-file ( c-addr u1 u2 -- f )
 ( Execute the d command. )
 : action-d ( addr -- ) @ 1- ed-lst list-delete ed-touch-file ;
 : ed-command-d ( range -- ) ed-range-action ed-error-command
+    dup 0 swap list-get @ to ed-current-line
     list-reverse dup ['] action-d swap list-exec list-free ;
 
 ( Execute the p command. )
