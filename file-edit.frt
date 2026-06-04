@@ -40,7 +40,7 @@
     0 xallocate 0 begin drop xfree
         opened-file read-line-allocated while
         2dup r@ ed-lst slist-add r> 1+ >r repeat
-    r> drop true ; is ed-read-file
+    drop xfree r> drop true ; is ed-read-file
 
 \ #SI
 ( -------------------------- Test --------------------------- )

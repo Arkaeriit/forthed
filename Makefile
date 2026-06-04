@@ -14,7 +14,7 @@ $(error "Invalid value for IO_TARGET. Valid values are 'files' and 'blocks'.")
 endif
 
 template.frt :
-	printf "\\ #IR ed.frt\n\\ #IR %s\n\\ #IR cli.frt\n" "$(IO_TEMPLATE_LINE)" > $@
+	printf "\\ #IR ed.frt\n\\ #IR %s\n\\ #IR cli.frt\ndepth abort\" Stask should be empty\"\n" "$(IO_TEMPLATE_LINE)" > $@
 
 forthed.frt : template.frt $(FORTH_SRC)
 	preforth $< $@
