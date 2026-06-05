@@ -19,6 +19,8 @@
 str-buff: ed-default-filename
 0 value ed-cmd-suffix
 str-buff: ed-cmd-argument
+0 value ed-prompt-enabled
+str-buff: ed-prompt
 
 ( Initializes the editor. )
 : ed-init ( -- ) list-init to ed-lst
@@ -26,11 +28,14 @@ str-buff: ed-cmd-argument
     ed-mode-command to ed-mode
     0 to ed-quit
     false to ed-file-modified
+    false to ed-prompt-enabled
+    ed-prompt str-buff-init s" *" ed-prompt str-buff-set
     ed-default-filename str-buff-init
     ed-cmd-argument str-buff-init ;
 
 ( Free the memory allocated by ed. )
 : ed-deinit ( -- ) ed-lst list-free
+    ed-prompt str-buff-free
     ed-default-filename str-buff-free
     ed-cmd-argument str-buff-free ;
 
@@ -278,6 +283,12 @@ defer ed-read-file ( c-addr u1 u2 -- f )
         if drop ed-get-default-filename type cr
         else ed-set-default-filename then ;
 
+( Execute the P command. )
+: ed-command-Pp ( range -- ) ed-no-range-command
+    ed-prompt-enabled if false to ed-prompt-enabled
+    else true to ed-prompt-enabled ed-cmd-argument-get dup
+    0<> if ed-prompt str-buff-set else 2drop then then ;
+
 ( Process a line input in the command mode.)
 : ed-process-command ( c-addr u -- ) ed-read-range
     dup 0= if 2drop list-free ed-error exit then
@@ -296,6 +307,7 @@ defer ed-read-file ( c-addr u1 u2 -- f )
         'W' of ed-command-Wa endof
         'E' of ed-command-E  endof
         'e' of ed-command-ee endof
+        'P' of ed-command-Pp endof
         >r list-free ed-error r>
     endcase ;
 
@@ -315,6 +327,7 @@ defer ed-read-file ( c-addr u1 u2 -- f )
 1024 constant ed-line-size
 ed-line-size buffer: ed-line
 : ed-repl ( -- ) ( TODO : prompt ) begin
+        ed-prompt-enabled if ed-prompt str-buff-get type then
         ed-line ed-line-size accept ed-line swap ed-process
     ed-quit until ;
 
