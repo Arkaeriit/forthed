@@ -1,7 +1,7 @@
 
 all: forthed.frt
 
-FORTH_SRC = block-and-file-support.frt block-edit.frt cli.frt ed.frt file-edit.frt forthed.frt line-reader.frt list.frt number-list.frt range-parser.frt str-buff.frt txt-list.frt utils.frt
+FORTH_SRC = block-and-file-support.frt block-edit.frt cli.frt ed.frt file-edit.frt line-reader.frt list.frt number-list.frt range-parser.frt str-buff.frt txt-list.frt utils.frt
 
 IO_TARGET ?= files
 
