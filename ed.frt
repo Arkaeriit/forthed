@@ -202,6 +202,13 @@ defer ed-read-file ( c-addr u1 u2 -- f )
     dup nlist-get-first to ed-current-line 
     list-free ;
 
+( Execute the i command. )
+: ed-command-i ( range -- ) ed-range-input
+    ed-error-command
+    ed-mode-input to ed-mode
+    dup nlist-get-first 1- 0 max to ed-current-line
+    list-free ;
+
 ( Execute the Q command. )
 : ed-command-Q ( range -- )
     ed-no-range-command
@@ -272,6 +279,7 @@ defer ed-read-file ( c-addr u1 u2 -- f )
     dup 0= if 2drop list-free ed-error exit then
     ed-read-cmd case
         'a' of ed-command-a  endof
+        'i' of ed-command-i  endof
         'Q' of ed-command-Q  endof
         'q' of ed-command-qq endof
          4  of ed-command-Q  endof
