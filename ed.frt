@@ -327,10 +327,11 @@ defer ed-read-file ( c-addr u1 u2 -- f )
 ( ED repl. )
 1024 constant ed-line-size
 ed-line-size buffer: ed-line
-: ed-repl ( -- ) ( TODO : prompt ) begin
+defer ed-repl
+:noname ( -- ) ( TODO : prompt ) begin
         ed-prompt-enabled if ed-prompt str-buff-get type then
         ed-line ed-line-size accept ed-line swap ed-process
-    ed-quit until ;
+    ed-quit until ; is ed-repl
 
 \ #SI
 ( -------------------------- Test --------------------------- )

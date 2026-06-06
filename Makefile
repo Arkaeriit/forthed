@@ -1,9 +1,10 @@
 
 all: forthed.frt
 
-FORTH_SRC = block-and-file-support.frt block-edit.frt cli.frt ed.frt file-edit.frt line-reader.frt list.frt number-list.frt range-parser.frt str-buff.frt txt-list.frt utils.frt
+FORTH_SRC = block-and-file-support.frt block-edit.frt cli.frt ed.frt file-edit.frt line-reader.frt list.frt number-list.frt range-parser.frt str-buff.frt txt-list.frt utils.frt no-repl.frt interactive-forth.frt
 
 IO_TARGET ?= files
+UI_TARGET ?= cli
 
 ifeq ($(IO_TARGET), files)
 	IO_TEMPLATE_LINE = file-edit.frt
@@ -15,8 +16,18 @@ else
 $(error "Invalid value for IO_TARGET. Valid values are 'files', 'blocks', or 'both'.")
 endif
 
+ifeq ($(UI_TARGET), cli)
+	UI_TEMPLATE_LINE = cli.frt
+else ifeq ($(UI_TARGET), no-repl)
+	UI_TEMPLATE_LINE = no-repl.frt
+else ifeq ($(UI_TARGET), interactive)
+	UI_TEMPLATE_LINE = interactive-forth.frt
+else
+$(error "Invalid value for UI_TARGET. Valid values are 'cli', 'no-repl', or 'interactive'.")
+endif
+
 template.frt :
-	printf "\\ #IR ed.frt\n\\ #IR %s\n\\ #IR cli.frt\n" "$(IO_TEMPLATE_LINE)" > $@
+	printf "\\ #IR ed.frt\n\\ #IR %s\n\\ #IR %s\n" "$(IO_TEMPLATE_LINE)" "$(UI_TEMPLATE_LINE)" > $@
 
 forthed.frt : template.frt $(FORTH_SRC)
 	preforth $< $@
