@@ -23,5 +23,9 @@ i
 i
 {{}}
 .
++i
+line line line
+line
+.
 w output-file
 q
