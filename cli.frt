@@ -34,7 +34,8 @@
 : main ( -- )
     check-for-help if exit then
     ed-init
-    dup 0<> if 2dup ed-set-default-filename E-if-exists then
+    dup 0<> if 2dup ed-set-default-filename E-if-exists
+            else 2drop then
     ed-repl ed-deinit ;
 
 main
