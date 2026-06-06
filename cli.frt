@@ -1,8 +1,13 @@
 ( ---------------------- CLI interface ---------------------- )
 
 ( Check that the stack is empty. )
-: depth-check ( -- ) depth
-    abort" Stack should be empty when leaving ed." ;
+: depth-check ( -- ) depth if
+    ." Stack should be empty when leaving ed." then ;
+
+( If next-arg exists on the system, call it. Otherwise, )
+( retunr a null string. )
+: try-next-arg ( -- c-addr u ) c" next-arg" find if
+    execute else drop 0 0 then ;
 
 ( Print the help message. )
 : print-help ( -- )
@@ -17,7 +22,7 @@
 ( If the first argument asks for help, prints it and return )
 ( true Otherwise, false true an the argument. )
 : check-for-help ( -- true | c-addr u false )
-    next-arg dup 0= if false exit then
+    try-next-arg dup 0= if false exit then
     2dup s" -h" compare 0= >r
     2dup s" --help" compare 0= r> or
     if 2drop print-help true else false then ;
