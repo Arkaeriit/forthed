@@ -1,0 +1,27 @@
+e input-file
+d
+0i
+b4 1.1
+b4 1.2
+.
+a
+???
+.
+3a
+-----
+_____
+.
+d
+6,7c
+a bit less
+and a bit more
+.
+i
+~~~
+.
+2,3n
+i
+{{}}
+.
+w output-file
+q
