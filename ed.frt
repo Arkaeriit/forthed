@@ -321,7 +321,8 @@ defer ed-read-file ( c-addr u1 u2 -- f )
 
 ( Parse the rest of the line as an ed command. Used to run )
 ( ed from an interactive Forth. )
-: ed ( "parse the rest of the line" -- ) 10 parse ed-process ;
+: ed-parse-cmd ( "parse the rest of the line" -- )
+    10 parse ed-process ;
 
 ( ED repl. )
 1024 constant ed-line-size
@@ -341,13 +342,13 @@ s"    otherfile.docx" ed-default-filename-if-needed type cr
 s"    " ed-default-filename-if-needed type cr
 depth . cr
 
-ed 0a
-ed first line
-ed second line
-ed .
-ed 1a
-ed between
-ed .
+ed-parse-cmd 0a
+ed-parse-cmd first line
+ed-parse-cmd second line
+ed-parse-cmd .
+ed-parse-cmd 1a
+ed-parse-cmd between
+ed-parse-cmd .
 ed-lst slist-print
 ed-repl
 ed-deinit

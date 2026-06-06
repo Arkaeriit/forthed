@@ -146,12 +146,12 @@
 ( -------------------------- Test --------------------------- )
 
 ed-init
-ed 0a
-ed abcd
-ed 1234
-ed .
-ed w 99,101
-ed Q
+ed-parse-cmd 0a
+ed-parse-cmd abcd
+ed-parse-cmd 1234
+ed-parse-cmd .
+ed-parse-cmd w 99,101
+ed-parse-cmd Q
 ed-deinit
 99 list
 bye
