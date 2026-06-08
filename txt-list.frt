@@ -63,6 +63,12 @@ bl value slist-padding
     to char-to-remove-if-trailing ['] remove-trailing
     swap list-exec ;
 
+( Remove all trailing empty lines from the list. )
+: remove-trailing-empty-lines ( lst -- ) dup list-size 0 ?do
+    dup dup list-size 1- swap list-get @ 0= if
+        dup dup list-size 1- swap list-delete
+        else drop unloop exit then loop drop ;
+
 \ #SI
 ( -------------------------- Test --------------------------- )
 

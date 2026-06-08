@@ -137,7 +137,8 @@
 ( file. )
 : insert-blocks ( u -- ) blocks-end 1+ blocks-start do
     i insert-block loop drop
-    bl ed-lst remove-trailing-in-list ;
+    bl ed-lst remove-trailing-in-list
+    ed-lst remove-trailing-empty-lines ;
 
 ( ed-read-file )
 :noname ( c-addr u1 u2 -- f ) >r try-parse-blocks 0= if
