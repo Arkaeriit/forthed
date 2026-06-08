@@ -117,7 +117,8 @@
     blocks-start to current-block-number 0 to current-line
     current-block-number buffer to current-block-buffer
     prepare-file ['] add-line-to-block ed-exec-on-range
-    fill-with-space true ; is ed-write-to-file
+    fill-with-space true
+        bl ed-lst remove-trailing-in-list ; is ed-write-to-file
 
 ( ed-append-to-file )
 :noname ( c-addr u range -- f ) drop 2drop false
@@ -135,7 +136,8 @@
 ( Insert all lines of the block range at line u of the ed )
 ( file. )
 : insert-blocks ( u -- ) blocks-end 1+ blocks-start do
-    i insert-block loop drop ;
+    i insert-block loop drop
+    bl ed-lst remove-trailing-in-list ;
 
 ( ed-read-file )
 :noname ( c-addr u1 u2 -- f ) >r try-parse-blocks 0= if

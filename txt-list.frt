@@ -45,6 +45,24 @@ bl value slist-padding
 : str-print ( addr -- ) str-get type cr ;
 : slist-print ( lst -- ) ['] str-print swap list-exec ;
 
+( Decrease the value at addr by one. )
+: decrease-addr ( addr x -- addr x ) over dup @ 1- swap ! ;
+
+( Given the address of an element of the list. Truncate out )
+( the trailing chars to remove. )
+0 value char-to-remove-if-trailing
+: remove-trailing ( addr -- ) dup @ dup 0 ?do
+        ( addr size -- ) 2dup i - 1- + cell+ c@
+        char-to-remove-if-trailing = if decrease-addr
+            else unloop 2drop exit then loop
+    2drop ;
+
+( Remove the given trailing char from all elements of the )
+( list. )
+: remove-trailing-in-list ( c lst -- ) swap
+    to char-to-remove-if-trailing ['] remove-trailing
+    swap list-exec ;
+
 \ #SI
 ( -------------------------- Test --------------------------- )
 
