@@ -5,7 +5,7 @@
 ( needed. The buffer will be freed by the caller. )
 
 ( Size of chunks read from the file. )
-10 constant line-buffer-chunk-size
+200 constant line-buffer-chunk-size
 
 0 value line-buffer
 0 value line-buffer-size
