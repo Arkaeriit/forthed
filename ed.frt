@@ -22,6 +22,10 @@ str-buff: ed-cmd-argument
 0 value ed-prompt-enabled
 str-buff: ed-prompt
 
+( Default prompt that could be chenged in interactive use. )
+defer ed-default-prompt
+:noname s" *" ; is ed-default-prompt
+
 ( Initializes the editor. )
 : ed-init ( -- ) list-init to ed-lst
     0 to ed-current-line 
@@ -29,7 +33,8 @@ str-buff: ed-prompt
     0 to ed-quit
     false to ed-file-modified
     false to ed-prompt-enabled
-    ed-prompt str-buff-init s" *" ed-prompt str-buff-set
+    ed-prompt str-buff-init
+    ed-default-prompt ed-prompt str-buff-set
     ed-default-filename str-buff-init
     ed-cmd-argument str-buff-init ;
 
