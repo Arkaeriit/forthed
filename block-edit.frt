@@ -112,8 +112,9 @@
 
 ( ed-write-to-file )
 :noname ( c-addr u range -- f ) >r try-parse-blocks 0= if
-    r> drop false exit then
-    r> enough-space-in-blocks? 0= if drop false exit then
+    r> drop false ." Can't parse block range" cr exit then
+    r> enough-space-in-blocks? 0= if drop false
+        ." Not enough space in block range." cr exit then
     blocks-start to current-block-number 0 to current-line
     current-block-number buffer to current-block-buffer
     prepare-file ['] add-line-to-block ed-exec-on-range
