@@ -235,9 +235,11 @@ defer ed-read-file ( c-addr u1 u2 -- f )
     dup 0 swap list-get @ to ed-current-line
     list-reverse dup ['] action-d swap list-exec list-free ;
 
-( Execute the c command, which is equivalent to d + i.)
+( Execute the c command, which is equivalent to d + -a.)
 : ed-command-c ( range -- ) ed-range-action ed-error-command
-    ed-command-d list-init ed-command-i ;
+    ed-command-d
+    list-init ed-current-line 1- over nlist-append
+    ed-command-a ;
 
 ( Execute the p command. )
 : action-p ( c-addr u -- ) type cr ;

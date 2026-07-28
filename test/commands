@@ -27,5 +27,9 @@ i
 line line line
 line
 .
+1c
+a new first
+a new second
+.
 w output-file
 q
